@@ -1,0 +1,95 @@
+{
+  "version": "2026-04-23",
+  "sources": [
+    {
+      "id": "goml-manuscript",
+      "type": "official_catalog",
+      "access": "public",
+      "url": "https://www.tnarch.gov.in/goml/manuscript",
+      "notes": "Government Oriental Manuscripts Library official manuscript portal."
+    },
+    {
+      "id": "goml-online-manuscripts",
+      "type": "official_scan_portal",
+      "access": "public_partial",
+      "url": "https://www.tnarch.gov.in/online-scripts",
+      "notes": "Official online manuscript portal with partial digitized bundles and PDFs."
+    },
+    {
+      "id": "goml-astrology-example",
+      "type": "official_astrology_example",
+      "access": "public",
+      "url": "https://www.tnarch.gov.in/goml/manuscripts/view/267",
+      "notes": "Example leaf manuscript detail page tagged as Astrology."
+    },
+    {
+      "id": "national-mission-manuscripts",
+      "type": "official_meta_index",
+      "access": "public",
+      "url": "https://namami.gov.in/main-category/manuscripts",
+      "notes": "National Mission for Manuscripts manuscript database entry point."
+    },
+    {
+      "id": "national-mission-resource-centres",
+      "type": "official_repository_index",
+      "access": "public",
+      "url": "https://www.namami.gov.in/manuscript-resource-centres",
+      "notes": "Repository map for major manuscript centres covering jyotisha-related holdings."
+    },
+    {
+      "id": "tamil-digital-library-palm-catalog",
+      "type": "catalog_pdf",
+      "access": "public",
+      "url": "https://www.tamildigitallibrary.in/admin/assets/book/TVA_BOK_0021115_Palm_Manuscripts.pdf",
+      "notes": "Catalog containing entries such as Varagarishi Nadi Mattrum and Vaalmiki Naadi."
+    },
+    {
+      "id": "swamikannu-pillai-dhruva-nadi-reference",
+      "type": "secondary_reference_pdf",
+      "access": "public",
+      "url": "https://www.tamildigitallibrary.in/admin/assets/book/TVA_BOK_0024173/TVA_BOK_002417_L_D_Swamikannu_Pillai.pdf",
+      "notes": "Contains publication reference to Maximum Age of Dhruva Nadi, 1923."
+    },
+    {
+      "id": "bhrigu-nandi-nadi-openlibrary",
+      "type": "published_equivalent_text",
+      "access": "public_metadata",
+      "url": "https://openlibrary.org/books/OL11495304M/Bhrigu_Nandi_Nadi",
+      "notes": "Metadata record for a published Bhrigu Nandi Nadi edition."
+    },
+    {
+      "id": "bhrigu-nandi-nadi-google-books",
+      "type": "published_equivalent_text",
+      "access": "public_metadata",
+      "url": "https://books.google.com/books/about/Bhrigu_Nandi_Nadi.html?id=Xq9huAAACAAJ",
+      "notes": "Google Books metadata record for a published Bhrigu Nandi Nadi edition."
+    },
+    {
+      "id": "arul-ganesan-kandam-list",
+      "type": "public_chapter_list",
+      "access": "public",
+      "url": "https://www.arulganesan.com/chapter-list/",
+      "notes": "Public 16 Kandam list including Santhipariharam, Deekshai, Aushadha and Disabukthi."
+    },
+    {
+      "id": "agasthya-nadi-chapters-list",
+      "type": "public_chapter_list",
+      "access": "public",
+      "url": "https://www.nadiastrologist.com/chapters-list/",
+      "notes": "Public 16 chapter list with Chapter 13 Santhi Pariharam, 14 Deekshai, 15 Aushada and 16 Dasabukthi."
+    },
+    {
+      "id": "maharishi-nadi-chapters-list",
+      "type": "public_chapter_list",
+      "access": "public",
+      "url": "https://maharishinadiastrology.com/chapters-list",
+      "notes": "Public chapter list used as a secondary cross-check for topics in Kandam 1-16."
+    }
+  ],
+  "missing_assets": [
+    "thumb_impression_to_bundle_dataset",
+    "leaf_level_ground_truth_labels",
+    "authenticated_personal_leaf_corpus",
+    "ocr_alignment_and_translation_pairs"
+  ]
+}

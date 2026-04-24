@@ -1,0 +1,28 @@
+{
+  "case_id": "sample-2000-01-01-chennai",
+  "birth": {
+    "date": "2000-01-01",
+    "time": "12:00",
+    "location_name": "Chennai, India",
+    "latitude": 13.0827,
+    "longitude": 80.2707,
+    "timezone_offset": 5.5,
+    "timezone_name": "Asia/Kolkata"
+  },
+  "requested_chapters": [1, 4, 7, 10, 12],
+  "requested_theme_packs": ["career", "wealth", "spirituality"],
+  "expected_chart_summary": {
+    "lagna": "Pisces",
+    "moon_sign": "Libra",
+    "nakshatra": "Swati"
+  },
+  "validation_meta": {
+    "benchmark_case_count": 1,
+    "expert_review_count": 0,
+    "longitudinal_follow_up_count": 0
+  },
+  "notes": [
+    "这是内部固定回归样例，不代表真实语料标注集。",
+    "当前只用于检查输出结构和盘面主字段是否漂移。"
+  ]
+}

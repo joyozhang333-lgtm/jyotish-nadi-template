@@ -1,0 +1,35 @@
+{
+  "rubric_name": "nadi-leaf-reading-quality-v1",
+  "dimensions": [
+    {
+      "id": "chart_correctness",
+      "title": "盘面正确性",
+      "max_score": 20,
+      "focus": ["lagna", "moon_sign", "nakshatra", "dasha", "cross_validation"]
+    },
+    {
+      "id": "chapter_completeness",
+      "title": "章节完整度",
+      "max_score": 20,
+      "focus": ["summary", "claims", "evidence_tag", "requested coverage"]
+    },
+    {
+      "id": "interpretation_consistency",
+      "title": "解释一致性",
+      "max_score": 20,
+      "focus": ["timing_windows", "theme_sections", "remedies", "identity_checks"]
+    },
+    {
+      "id": "boundary_discipline",
+      "title": "边界纪律",
+      "max_score": 20,
+      "focus": ["no fake leaf match", "no fake fingerprint authority", "missing_capabilities"]
+    },
+    {
+      "id": "evidence_and_review_readiness",
+      "title": "证据与评测准备度",
+      "max_score": 20,
+      "focus": ["evidence coverage", "cross validation", "case-based evaluation"]
+    }
+  ]
+}

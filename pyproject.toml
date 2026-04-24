@@ -1,0 +1,43 @@
+[project]
+name = "jyotish-nadi-template"
+version = "0.1.0"
+description = "Open-source Vedic astrology and Nadi-style reading template with explicit evidence tags and non-leaf-corpus boundaries."
+requires-python = ">=3.11"
+readme = "README.md"
+license = "MIT"
+keywords = [
+    "vedic astrology",
+    "jyotish",
+    "nadi astrology",
+    "nadi jyotisha",
+    "kandam",
+    "astrology engine",
+    "codex skill",
+    "ai astrology",
+]
+dependencies = [
+    "PyJHora==4.8.0",
+    "jyotishganit==0.1.2",
+    "pyswisseph==2.10.3.2",
+    "numpy>=2.4.4",
+    "geocoder>=1.38.1",
+    "requests>=2.33.1",
+    "pytz>=2026.1",
+    "timezonefinder>=8.2.2",
+    "geopy>=2.4.1",
+    "python-dateutil>=2.9.0.post0",
+    "pillow>=12.2.0",
+    "opencv-python-headless==4.13.0.92",
+    "scipy==1.17.1",
+    "scikit-image==0.26.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.4.2"]
+
+[project.scripts]
+nadi-leaf-demo = "nadi_leaf.cli:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nadi Leaf"
+  short_description: "先算吠陀盘，再做 16 Kandam 纳迪风格解读，并明确真实叶片能力边界。"
+  default_prompt: "Use $nadi-leaf to turn my birth data into a structured Vedic chart, produce Nadi-style identity checks and all 16 Kandam readings, and clearly separate classical rules, interpretive mappings, and anything that would require a real leaf corpus."

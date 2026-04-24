@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local/private outputs
+reports/
+outputs/
+exports/
+evaluations/feedback/
+
+# Large local ephemeris/catalog files
+hip_main.dat
+*.se1
+*.se2
+*.se3
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+
+# Logs and temp files
+*.log
+tmp/
+*.tmp
