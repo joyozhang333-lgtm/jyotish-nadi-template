@@ -7,6 +7,12 @@ from nadi_leaf.models import ThemePack
 from nadi_leaf.reading_engine import build_reading_bundle
 
 
+PRIVATE_DEMO_PHRASES = [
+    "你已经反馈",
+    "你的进一步反馈",
+]
+
+
 def test_render_premium_markdown_report_contains_timeline_and_appendix() -> None:
     chart = generate_chart(
         BirthData(
@@ -66,6 +72,7 @@ def test_render_premium_markdown_report_contains_timeline_and_appendix() -> None
     assert "## 过去、现在、未来" in report
     assert "## 技术附录" in report
     assert "名字边界" in report
+    assert _private_demo_phrases(report) == []
 
 
 def test_render_premium_markdown_report_can_render_all_16_kandams() -> None:
@@ -118,3 +125,8 @@ def test_render_premium_markdown_report_can_render_all_16_kandams() -> None:
     assert "**这一章给你的指导**" in report
     assert "不预测死亡日期" in report
     assert "不提供诊断、药方或替代医疗建议" in report
+    assert _private_demo_phrases(report) == []
+
+
+def _private_demo_phrases(report: str) -> list[str]:
+    return [phrase for phrase in PRIVATE_DEMO_PHRASES if phrase in report]

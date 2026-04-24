@@ -194,12 +194,12 @@ def _section_verified_anchors(guidance_profile: dict[str, Any]) -> list[str]:
     lines = [
         "## 已验证锚点",
         "",
-        "下面这些不是重新猜，是根据你已经反馈过的 `准 / 半准` 收敛出来的判断边界：",
+        "下面这些不是重新猜，是根据使用者反馈过的 `准 / 半准` 收敛出来的判断边界：",
     ]
     for anchor in guidance_profile["validated_anchors"]:
         lines.append(f"- `{anchor['rating']}`：{anchor['claim']}")
         if anchor["user_note"]:
-            lines.append(f"  你的反馈：{anchor['user_note']}")
+            lines.append(f"  使用者反馈：{anchor['user_note']}")
     lines.append("")
     return lines
 
@@ -364,9 +364,9 @@ def _kandam_longform_content(chart: dict[str, Any], kandam: int) -> dict[str, An
                     f"木星落第 {jupiter_house} 宫，说明家不是一个简单背景，而是会长期影响你情绪、睡眠、选择和根基感的主题。"
                 ),
                 (
-                    "结合你的进一步反馈，这里要拆成三层：家庭财务的主要来源是父亲的工资收入；资金管理权在母亲手里；"
-                    "直接给你钱的人通常是母亲，但她会和父亲商量。这说明第 4 宫母亲线不能只写成情绪责任，"
-                    "也不能把财务支持简单归到父亲或母亲某一方，而是“父亲供给、母亲掌管、父母协商”。"
+                    "这一章在报告里不能直接替使用者断定家庭财务由谁供给或由谁管理。更稳妥的写法，是把家庭资源拆成三层核验："
+                    "收入来源、资金管理者、实际给付者。第 4 宫母亲线、第 9 宫父亲线和第 2 宫家族资源线需要分开看，"
+                    "不能在没有反馈样本时写成某个固定家庭模式。"
                 ),
             ],
             "manifestations": [
@@ -375,7 +375,7 @@ def _kandam_longform_content(chart: dict[str, Any], kandam: int) -> dict[str, An
                 "房子、居住城市、工作空间的变化，常常不只是生活变化，也代表内在重组。",
             ],
             "guidance": [
-                "把父亲收入来源、母亲资金管理、父母共同决策、你自己的情绪责任分开记录。",
+                "分别记录家庭收入来源、资金管理者、直接给付者和你自己的情绪责任，避免混成一句模糊判断。",
                 "固定整理居住空间和睡眠节律，这对你不是小事，而是稳定内在的根基。",
                 "不要长期默认自己承担家庭隐性责任，责任要说清楚、分清楚。",
             ],
@@ -448,8 +448,8 @@ def _kandam_longform_content(chart: dict[str, Any], kandam: int) -> dict[str, An
                     f"金星落第 {venus_house} 宫，Navamsa 金星在{_sign_zh(navamsa_venus)}，说明关系对你不是装饰，而是人生主线之一。"
                 ),
                 (
-                    "你已经反馈过：很难接受纯轻松型伴侣是准的，但是否会被高压力的人吸引不能下强结论。"
-                    "所以更准确的表达是：你要的不是沉重，而是深度、可靠、能谈现实、能共同复盘的人。"
+                    "这里不能把“需要深度”直接写成“必然被高压力关系吸引”。更准确的核验方向是："
+                    "使用者是否不满足于纯轻松、纯暧昧的关系，而更看重可靠度、现实沟通、边界和共同复盘。"
                 ),
             ],
             "manifestations": [
@@ -508,7 +508,7 @@ def _kandam_longform_content(chart: dict[str, Any], kandam: int) -> dict[str, An
                 ),
             ],
             "manifestations": [
-                "父亲线和资源来源需要单独看：父亲更像家庭财务来源，母亲更像资金管理者和直接给付者。",
+                "父亲线、导师线、家族资源线需要单独核验，不能把权威、财务支持和情感责任混成一个结论。",
                 "你会尊重传统，但不会完全照父辈或权威指定的路线走。",
                 "外地、远行、导师、课程、修行体系会周期性改变你的方向感。",
             ],
@@ -531,8 +531,8 @@ def _kandam_longform_content(chart: dict[str, Any], kandam: int) -> dict[str, An
                     f"太阳第 {sun_house} 宫、土星第 {saturn_house} 宫，说明事业不是靠一阵爆发，而是靠长期责任、合作场景和稳定交付建立起来。"
                 ),
                 (
-                    "你已经反馈职业前期试错多、真正起势靠长期积累是准的。这个判断应该作为事业章的核心锚点："
-                    "你不是能力不行，而是需要把能力从零散状态推进到流程、产品、案例、客户和权威。"
+                    "事业章适合把“早期试错”和“长期积累”作为重点核验项：如果使用者确实经历过多轮试错，"
+                    "报告应把问题落到能力结构化，而不是简单判断为能力不足。"
                 ),
             ],
             "manifestations": [
@@ -586,8 +586,8 @@ def _kandam_longform_content(chart: dict[str, Any], kandam: int) -> dict[str, An
                     f"罗喉第 {rahu_house} 宫、计都第 {ketu_house} 宫，Navamsa 计都在{_sign_zh(navamsa_ketu)}，说明迁移和抽离感不是偶发主题。"
                 ),
                 (
-                    "你已经反馈外地、迁移、隐退、睡眠波动或想离开熟悉圈层重新开始这一条是准的。"
-                    "所以这章应当重点写：你不是为了逃避而迁移，而是环境变化会帮你切断旧惯性、重新组织内在和事业。"
+                    "这一章适合重点核验外地、迁移、隐退、睡眠波动或离开熟悉圈层重新开始的周期。"
+                    "如果反馈显示这条成立，报告应继续区分：这是逃避消耗，还是新阶段确实需要新的环境结构。"
                 ),
             ],
             "manifestations": [

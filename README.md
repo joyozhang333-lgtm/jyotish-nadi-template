@@ -220,6 +220,7 @@ This repository is designed to be open-source safe:
 - Private generated reports are ignored via `.gitignore`.
 - User feedback files are ignored via `.gitignore`.
 - The included sample case is anonymous demo data.
+- Public demo reports should be generated only from `evaluations/cases/sample-case.json` or another clearly fictional case.
 - Do not commit real birth data, names, fingerprint images, or generated personal reports.
 
 ## License
