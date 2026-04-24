@@ -1,14 +1,32 @@
 # Jyotish Nadi Template
 
-**Jyotish Nadi Template** is an open-source template for building Vedic astrology / Jyotish reading systems with a Nadi-style chapter structure. It converts birth data into a structured Vedic chart, maps the chart into 16 common Kandam-style reading chapters, adds timing windows, evidence tags, quality scoring, and clear product boundaries.
+**Jyotish Nadi Template** is an open-source template for building Vedic astrology / Jyotish reading systems with a Nadi-style chapter structure. It is explicitly **based on Vedic astrology calculations** rather than original Nadi leaf manuscripts. It converts birth data into a structured Vedic chart, maps the chart into 16 common Kandam-style reading chapters, adds timing windows, evidence tags, quality scoring, and clear product boundaries.
 
-> Important: this repository is **not** a collection of original Nadi palm leaf manuscripts, not a digitized Nadi leaf corpus, not an authenticated Agastya Nadi / Bhrigu Nadi text, and not a fingerprint-to-leaf matching system. It is a software template for **Nadi-style interpretation built on Vedic astrology calculations**.
+> Important: this repository is **not** a collection of original Nadi palm leaf manuscripts, not a digitized Nadi leaf corpus, not an authenticated Agastya Nadi / Bhrigu Nadi text, and not a fingerprint-to-leaf matching system. It is a software template for **Nadi-style interpretation built on Vedic astrology calculations** and can be used as a reference for people who want to understand how Nadi-style readings may relate to Jyotish chart factors.
 
-中文：**Jyotish Nadi Template** 是一个开源的吠陀占星 / Jyotish 解读模板，用于把出生资料转成结构化吠陀盘面，并按公开常见的 16 个 Kandam 章节生成纳迪风格报告。它不是纳迪叶原文，不是真实叶片数据库，也不能宣称“已经找到某个人的真实纳迪叶”。
+中文：**Jyotish Nadi Template** 是一个开源的吠陀占星 / Jyotish 解读模板。它明确依据的是**吠陀占星计算体系**，不是纳迪叶原文。它用于把出生资料转成结构化吠陀盘面，并按公开常见的 16 个 Kandam 章节生成纳迪风格报告。它可以作为大家了解 Nadi 叶、Nadi-style reading 和吠陀占星关系的参考，但不能宣称“已经找到某个人的真实纳迪叶”。
 
 ## SEO Keywords
 
-Vedic astrology, Jyotish, Nadi astrology, Nadi Jyotisha, Naadi astrology, Agastya Nadi, Bhrigu Nadi, Kandam, palm leaf astrology, Vedic birth chart, Vimshottari Dasha, Nadi reading template, AI astrology, Codex skill, astrology report generator, 吠陀占星, 纳迪叶, 纳迪占星, 纳迪风格解读, 印度占星, 16 Kandam, 大运分运, 纳迪叶模板。
+Vedic astrology, Jyotish, Nadi astrology, Nadi Jyotisha, Naadi astrology, Agastya Nadi, Bhrigu Nadi, Kandam, palm leaf astrology, Vedic birth chart, Vimshottari Dasha, Dasha Bhukti, Nadi reading template, Nadi leaf reference, learn Nadi astrology, AI astrology, Codex skill, astrology report generator, 吠陀占星, 印度占星, 纳迪叶, 纳迪占星, 纳迪叶参考, 纳迪叶入门, 纳迪风格解读, 16 Kandam, 大运分运, 纳迪叶模板。
+
+## What Is Vedic Astrology / Jyotish?
+
+Vedic astrology, also known as **Jyotish**, is a traditional Indian astrology system that interprets a birth chart through sidereal zodiac signs, houses, planetary lords, Nakshatras, Vargas, and planetary periods such as Vimshottari Dasha. A Jyotish reading usually starts from precise birth data, calculates the Lagna or ascendant, places planets into houses and signs, and then interprets life themes such as character, family, relationships, profession, wealth, health tendencies, spirituality, and timing cycles.
+
+In this project, Vedic astrology is the calculation and evidence foundation. The software first builds a structured Jyotish chart, then maps that chart into a Nadi-style report structure. This means the output is grounded in chart factors such as house lords, planetary placements, Dasha periods, Navamsa, and evidence tags. It should be read as a **Vedic astrology-based Nadi-style template**, not as a recovered palm leaf scripture.
+
+## How This Helps People Understand Nadi Leaves
+
+Nadi astrology is often associated with palm leaf manuscripts, thumb impressions, identity verification, and chapter-based readings called Kandams. Many readers are curious about Nadi leaves but do not have access to authenticated manuscripts, original Tamil/Sanskrit palm leaf text, lineage-based translations, or verified leaf-bundle indexes.
+
+This repository provides a transparent reference layer:
+
+- It shows how a 16 Kandam-style structure can be modeled in software.
+- It explains which parts can be derived from ordinary Jyotish chart factors.
+- It marks which claims would require real Nadi leaf corpus data.
+- It keeps Nadi-style interpretation separate from authentic palm leaf matching.
+- It helps developers and researchers prototype a responsible educational tool for learning about Nadi-style readings.
 
 ## What This Project Does
 
@@ -65,7 +83,13 @@ Every important claim should be marked with one of these labels:
 
 ### 项目定位
 
-`Jyotish Nadi Template` 是一个“吠陀占星计算 + 纳迪风格章节报告”的开源模板。它适合用来开发：
+`Jyotish Nadi Template` 是一个“吠陀占星计算 + 纳迪风格章节报告”的开源模板。它的根基是吠陀占星，不是纳迪叶原文。换句话说，本项目先用 Jyotish 的排盘、宫位、星体、Nakshatra、Dasha、Navamsa 等方法建立盘面证据，再把这些证据组织成接近 Nadi 叶阅读体验的 16 Kandam 报告。
+
+吠陀占星，也常称为 Jyotish，是印度传统占星体系。它通常以准确出生时间和地点为基础，计算上升、星体落宫、月宿、分盘和大运分运，用来观察一个人的性格、家庭、关系、事业、财富、健康倾向、灵性路径和时间周期。和现代心理测评不同，它更强调时间、业力主题、人生阶段和具体生活领域的联动。
+
+Nadi 叶传统中会出现手印、叶束、身份核验、Kandam 分章、补救章节等元素。本项目不能替代真实 Nadi 叶阅读，但可以作为一个公开、可审计、可学习的参考：帮助读者理解 Nadi-style report 可能如何借助吠陀占星盘面来组织内容，也帮助开发者区分“可由 Jyotish 推导的内容”和“必须依赖真实叶片语料的内容”。
+
+它适合用来开发：
 
 - 吠陀占星 AI 解读系统
 - 纳迪风格报告生成器
@@ -87,6 +111,18 @@ Every important claim should be marked with one of these labels:
 - 不宣称命理预测准确率达到 95%
 
 它做的是：在诚实边界内，用可复用的软件结构，把吠陀盘面转成纳迪风格、可核验、可评分、可迭代的解读报告。
+
+### 可以作为 Nadi 叶入门参考
+
+如果你想了解 Nadi 叶，本项目可以帮助你先理解几个基础问题：
+
+- Nadi 叶报告为什么会按 Kandam 分章？
+- 哪些内容可以从普通吠陀盘面中推导？
+- 哪些内容必须依赖真实叶片、传承文本或人工校勘？
+- 为什么“纳迪风格解读”和“真实纳迪叶原文”必须分开？
+- 为什么指纹分类、叶束索引和身份核验不能和普通排盘混为一谈？
+
+因此，本项目更适合被理解为 **Nadi 叶学习参考 / Nadi-style report template / Vedic astrology-based interpretation framework**。
 
 ## Quick Start
 
