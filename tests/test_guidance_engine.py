@@ -34,4 +34,6 @@ def test_build_guidance_profile_uses_confirmed_feedback() -> None:
 
     assert profile["validated_anchors"][0]["id"] == "career_trial_and_accumulation"
     assert profile["guidance_items"][0]["priority"] == 1
-    assert "稳定交付" in profile["guidance_items"][0]["title"]
+    assert "大运" in profile["guidance_items"][0]["title"]
+    assert "第 " in profile["guidance_items"][0]["why"]
+    assert profile["guidance_items"][1]["title"].startswith("把第 ")

@@ -69,6 +69,7 @@ def test_render_premium_markdown_report_contains_timeline_and_appendix() -> None
 
     assert "## 已验证锚点" in report
     assert "## 指导优先级" in report
+    assert "## 盘面指纹" in report
     assert "## 过去、现在、未来" in report
     assert "## 技术附录" in report
     assert "名字边界" in report
@@ -121,6 +122,7 @@ def test_render_premium_markdown_report_can_render_all_16_kandams() -> None:
 
     assert "## 16 Kandam 完整正文" in report
     assert "### Kandam 16｜Dasa Bukthi：大运分运预测" in report
+    assert "这一节专门防止报告模板化" in report
     assert "**现实中更可能这样表现**" in report
     assert "**这一章给你的指导**" in report
     assert "不预测死亡日期" in report

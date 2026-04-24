@@ -88,6 +88,26 @@ DEBILITATION_SIGNS = {
     "Saturn": "Aries",
 }
 UPACHAYA_HOUSES = {3, 6, 10, 11}
+LAGNA_TONES = {
+    "Aries": "行动、冲锋、主动开局和自我证明",
+    "Taurus": "资源、身体感、稳定价值和长期积累",
+    "Gemini": "信息、连接、学习速度和多线程适应",
+    "Cancer": "情绪保护、家族牵连、照料能力和安全感",
+    "Leo": "自我光源、判断权、权威关系和被看见的位置",
+    "Virgo": "分析、秩序、服务、修正和精细化能力",
+    "Libra": "关系镜像、审美秩序、公平交换和公众协商",
+    "Scorpio": "深层控制、危机重组、信任边界和隐藏力量",
+    "Sagittarius": "信念、远方、学习系统和人生方向感",
+    "Capricorn": "现实结构、责任阶梯、长期位置和规则承接",
+    "Aquarius": "系统、社群、非传统路线和未来议题",
+    "Pisces": "感受力、信仰、慈悲、灵性和边界溶解",
+}
+NAKSHATRA_TONES = {
+    "Swati": "像风一样要空间、流动、交易、独立判断和可移动的身份",
+    "Uttara Bhadrapada": "更深、更内化，容易把人生问题带进心理、灵性和长期责任里消化",
+    "Revati": "带有收尾、保护、迁移、引导和跨界转换的味道",
+    "Chitra": "重视作品感、结构美、技术感和个人风格的成形",
+}
 
 
 def render_premium_markdown_report(
@@ -114,6 +134,7 @@ def render_premium_markdown_report(
     for item in _executive_summary(chart, reading):
         lines.append(f"- {item}")
     lines.append("")
+    lines.extend(_section_chart_fingerprint(chart))
     if guidance_profile["validated_anchors"]:
         lines.extend(_section_verified_anchors(guidance_profile))
     lines.extend(_section_guidance_priorities(guidance_profile))
@@ -164,16 +185,23 @@ def _executive_summary(chart: dict[str, Any], reading: dict[str, Any]) -> list[s
     moon_house = _planet_house(chart, "Moon")
     current_maha = _current_maha_lord(chart)
     current_maha_house = _planet_house(chart, current_maha)
+    rahu_house = _planet_house(chart, "Rahu")
+    ketu_house = _planet_house(chart, "Ketu")
+    dominant_house, dominant_planets = _dominant_house_cluster(chart)
     first = (
-        f"这张盘不是松散漂浮型，而是典型的“被现实课题推着成长”的盘。"
-        f"人生主线会反复被 {HOUSE_ARENAS[lagna_lord_house]} 拉到台前。"
+        f"这张盘的第一主轴是第 {dominant_house} 宫的{_planet_list_zh(dominant_planets)}聚集，"
+        f"不是泛泛的“责任成长”。人生会反复被 {HOUSE_ARENAS[dominant_house]} 推到台前。"
     )
     second = (
-        f"内在层面，月亮落在第 {moon_house} 宫，说明情绪和安全感并不走表面轻松路线，"
-        f"真正改变你的往往是危机、重组、深层关系或价值观翻修。"
+        f"命主星{PLANET_ZH[lagna_lord]}落第 {lagna_lord_house} 宫，月亮落第 {moon_house} 宫，"
+        f"说明外在身份靠{HOUSE_ARENAS[lagna_lord_house]}塑形，内在反应则从{HOUSE_ARENAS[moon_house]}启动。"
     )
-    third = _current_period_one_liner(chart, current_maha, current_maha_house)
-    return [first, second, third]
+    third = (
+        f"罗喉/计都落第 {rahu_house}/{ketu_house} 宫，形成“{HOUSE_ARENAS[rahu_house]}要扩张，"
+        f"{HOUSE_ARENAS[ketu_house]}要松绑”的轴线；这条轴比普通性格描述更能区分此盘。"
+    )
+    fourth = _current_period_one_liner(chart, current_maha, current_maha_house)
+    return [first, second, third, fourth]
 
 
 def _chart_skeleton(chart: dict[str, Any]) -> list[str]:
@@ -188,6 +216,30 @@ def _chart_skeleton(chart: dict[str, Any]) -> list[str]:
         f"Navamsa 上升落在{_sign_zh(chart['chart_summary']['navamsa_lagna'])}。"
     )
     return items
+
+
+def _section_chart_fingerprint(chart: dict[str, Any]) -> list[str]:
+    lagna = chart["chart_summary"]["lagna"]
+    nakshatra = chart["chart_summary"]["nakshatra"]
+    dominant_house, dominant_planets = _dominant_house_cluster(chart)
+    moon_house = _planet_house(chart, "Moon")
+    rahu_house = _planet_house(chart, "Rahu")
+    ketu_house = _planet_house(chart, "Ketu")
+    seventh_lord = _house_lord(chart, 7)
+    tenth_lord = _house_lord(chart, 10)
+    lines = [
+        "## 盘面指纹",
+        "",
+        "这一节专门防止报告模板化，只抓这张盘区别于别人的骨架：",
+        f"- 上升是{_sign_zh(lagna)}，底色是{LAGNA_TONES.get(lagna, '个人主轴与外部现实之间的磨合')}。",
+        f"- 月宿是 {nakshatra}，表现为{NAKSHATRA_TONES.get(nakshatra, '特定月宿气质会影响情绪、动机和事件触发方式')}。",
+        f"- 第 {dominant_house} 宫有{_planet_list_zh(dominant_planets)}，这是全盘事件密度最高的区域，主题是{HOUSE_ARENAS[dominant_house]}。",
+        f"- 月亮第 {moon_house} 宫：{_moon_house_fingerprint(moon_house)}",
+        f"- 罗喉第 {rahu_house} 宫、计都第 {ketu_house} 宫：{_node_axis_fingerprint(rahu_house, ketu_house)}",
+        f"- 第 7 宫主{PLANET_ZH[seventh_lord]}落第 {_planet_house(chart, seventh_lord)} 宫，第 10 宫主{PLANET_ZH[tenth_lord]}落第 {_planet_house(chart, tenth_lord)} 宫；关系线和事业线必须分开读，不能混成一套通用话术。",
+        "",
+    ]
+    return lines
 
 
 def _section_verified_anchors(guidance_profile: dict[str, Any]) -> list[str]:
@@ -271,30 +323,33 @@ def _kandam_longform_content(chart: dict[str, Any], kandam: int) -> dict[str, An
     moon_house = _planet_house(chart, "Moon")
     rahu_house = _planet_house(chart, "Rahu")
     ketu_house = _planet_house(chart, "Ketu")
+    dominant_house, dominant_planets = _dominant_house_cluster(chart)
 
     if kandam == 1:
         return {
             "paragraphs": [
                 (
-                    f"你这张盘的第一章不是“安静地做自己”，而是“通过他人、合作、公众关系和现实绑定来认识自己”。"
-                    f"{_sign_zh(lagna)}上升给你一种要主导人生、要形成个人判断的底色，但命主星{PLANET_ZH[lagna_lord]}落第 {lagna_lord_house} 宫，"
-                    "说明你的身份感不是单独长出来的，而是在关系、客户、合作、外部评价中被不断磨出来的。"
+                    f"第一章先看这张盘的唯一性：{_sign_zh(lagna)}上升的底色是"
+                    f"{LAGNA_TONES.get(lagna, '个人主轴与外部现实之间的磨合')}；"
+                    f"命主星{PLANET_ZH[lagna_lord]}落第 {lagna_lord_house} 宫，"
+                    f"身份感会被{HOUSE_ARENAS[lagna_lord_house]}反复塑形。"
                 ),
                 (
-                    f"月亮落第 {moon_house} 宫，让你的内在比外表深很多。你不是没有情绪，而是很多感受会先被压到更深处，"
-                    "等到关系、金钱、信任或安全感被触发时，才会以重组、抽离、换方向的方式冒出来。"
-                    f"罗喉第 {rahu_house} 宫、计都第 {ketu_house} 宫，也说明你不是完全沿着父辈或传统路线走的人。"
+                    f"第 {dominant_house} 宫聚集{_planet_list_zh(dominant_planets)}，"
+                    f"说明{HOUSE_ARENAS[dominant_house]}是第一章必须先抓住的事件场。"
+                    f"月亮第 {moon_house} 宫：{_moon_house_fingerprint(moon_house)}"
+                    f"罗喉第 {rahu_house} 宫、计都第 {ketu_house} 宫：{_node_axis_fingerprint(rahu_house, ketu_house)}"
                 ),
             ],
             "manifestations": [
-                "别人容易看到你的能力、表达或承担，但不一定看到你内在的复杂度。",
-                "人生重要转折多半绕不开合作、关系、客户、公众角色或外部评价。",
-                "你真正成熟，不是变得更会讨好，而是在关系里保住判断权、边界和角色中心。",
+                f"人生重要转折多半绕不开{HOUSE_ARENAS[dominant_house]}，这是此盘最强的外部事件场。",
+                f"内在反应要按月亮第 {moon_house} 宫看，不能只按外在表现判断。",
+                f"罗喉/计都第 {rahu_house}/{ketu_house} 宫会制造一条“扩张-抽离”的长期轴线。",
             ],
             "guidance": [
-                "把“我是谁”落实成稳定角色：你提供什么价值、对谁负责、边界在哪里。",
-                "不要把关系里的压力都理解成失败；这张盘本来就是在关系场里练主导权。",
-                "每次重大转折后都做复盘：这次到底是别人改变了你，还是你通过别人看清了自己。",
+                f"先把第 {dominant_house} 宫主题落成可观察事实：角色、关系、事件、收益或压力分别是什么。",
+                f"每次重大转折都同时复盘第 {rahu_house} 宫的欲望和第 {ketu_house} 宫的抽离。",
+                "不要用通用性格词解释此人，要用命主星、月亮和罗喉计都轴来核验。",
             ],
         }
 
@@ -307,12 +362,10 @@ def _kandam_longform_content(chart: dict[str, Any], kandam: int) -> dict[str, An
             "paragraphs": [
                 (
                     f"第二章看钱，但你的钱不是孤立的钱。第 2 宫主{PLANET_ZH[second_lord]}落第 {second_house} 宫，"
-                    f"水星本身也在第 {mercury_house} 宫发力，木星落第 {jupiter_house} 宫，说明财富要通过表达、技能、秩序、信誉和长期服务慢慢做厚。"
+                    f"水星本身也在第 {mercury_house} 宫发力，木星落第 {jupiter_house} 宫。"
+                    f"{_wealth_fingerprint(second_house, _planet_house(chart, _house_lord(chart, 11)), jupiter_house)}"
                 ),
-                (
-                    "这不是一张适合只靠短线刺激、冲动交易或单次机会翻身的财富盘。更像是你越能把能力讲清楚、流程化、产品化、稳定交付，"
-                    "收入越容易稳定。家庭资源和教育背景会给你一部分底层影响，但真正决定后续财富质量的，是你能不能把认知变成可复用的价值。"
-                ),
+                _wealth_model_paragraph(second_house, _planet_house(chart, _house_lord(chart, 11)), jupiter_house),
             ],
             "manifestations": [
                 "钱和工作压力、客户需求、交付质量经常绑在一起，不太能完全轻松地赚钱。",
@@ -361,12 +414,11 @@ def _kandam_longform_content(chart: dict[str, Any], kandam: int) -> dict[str, An
             "paragraphs": [
                 (
                     f"第四章看母亲、家宅、房产、居住环境和内在稳定。第 4 宫主{PLANET_ZH[fourth_lord]}落第 {fourth_house} 宫，"
-                    f"木星落第 {jupiter_house} 宫，说明家不是一个简单背景，而是会长期影响你情绪、睡眠、选择和根基感的主题。"
+                    f"木星落第 {jupiter_house} 宫。{_home_lord_fingerprint(chart, fourth_house)}"
                 ),
                 (
-                    "这一章在报告里不能直接替使用者断定家庭财务由谁供给或由谁管理。更稳妥的写法，是把家庭资源拆成三层核验："
-                    "收入来源、资金管理者、实际给付者。第 4 宫母亲线、第 9 宫父亲线和第 2 宫家族资源线需要分开看，"
-                    "不能在没有反馈样本时写成某个固定家庭模式。"
+                    f"月亮第 {moon_house} 宫、木星第 {jupiter_house} 宫进一步说明："
+                    f"{_home_moon_jupiter_fingerprint(moon_house, jupiter_house)}"
                 ),
             ],
             "manifestations": [
@@ -445,23 +497,13 @@ def _kandam_longform_content(chart: dict[str, Any], kandam: int) -> dict[str, An
             "paragraphs": [
                 (
                     f"第七章看婚姻、伴侣、合作和客户关系。第 7 宫主{PLANET_ZH[seventh_lord]}落第 {seventh_house} 宫，"
-                    f"金星落第 {venus_house} 宫，Navamsa 金星在{_sign_zh(navamsa_venus)}，说明关系对你不是装饰，而是人生主线之一。"
+                    f"金星落第 {venus_house} 宫，Navamsa 金星在{_sign_zh(navamsa_venus)}。"
+                    f"{_relationship_fingerprint(chart, seventh_house, venus_house)}"
                 ),
-                (
-                    "这里不能把“需要深度”直接写成“必然被高压力关系吸引”。更准确的核验方向是："
-                    "使用者是否不满足于纯轻松、纯暧昧的关系，而更看重可靠度、现实沟通、边界和共同复盘。"
-                ),
+                _relationship_risk_fingerprint(chart, seventh_house, venus_house),
             ],
-            "manifestations": [
-                "你不会满足于只开心、只暧昧、只轻松的关系。",
-                "关系会牵动你的工作节奏、价值感、责任感和人生秩序。",
-                "合作对象、客户、伴侣的质量，会直接影响你的事业和内在稳定。",
-            ],
-            "guidance": [
-                "筛选关系时看三件事：能不能谈现实，能不能守边界，能不能共同成长。",
-                "不要把沉重感误判为深度，也不要把轻松感一概判成不可靠。",
-                "重要关系要建立复盘机制，而不是让情绪长期积压。",
-            ],
+            "manifestations": _relationship_manifestation_points(chart, seventh_house, venus_house),
+            "guidance": _relationship_guidance_points(seventh_house, venus_house),
         }
 
     if kandam == 8:
@@ -528,23 +570,14 @@ def _kandam_longform_content(chart: dict[str, Any], kandam: int) -> dict[str, An
             "paragraphs": [
                 (
                     f"第十章看职业、事业、地位、职责和社会角色。第 10 宫主{PLANET_ZH[tenth_lord]}落第 {tenth_house} 宫，"
-                    f"太阳第 {sun_house} 宫、土星第 {saturn_house} 宫，说明事业不是靠一阵爆发，而是靠长期责任、合作场景和稳定交付建立起来。"
+                    f"太阳第 {sun_house} 宫、土星第 {saturn_house} 宫。{_career_house_fingerprint(chart)}"
                 ),
                 (
-                    "事业章适合把“早期试错”和“长期积累”作为重点核验项：如果使用者确实经历过多轮试错，"
-                    "报告应把问题落到能力结构化，而不是简单判断为能力不足。"
+                    f"{_career_planet_mix_fingerprint(chart, tenth_house, saturn_house, _planet_house(chart, 'Mercury'), _planet_house(chart, 'Venus'))}"
                 ),
             ],
-            "manifestations": [
-                "早年在组织和独立之间摆荡，是这张盘很典型的事业训练。",
-                "你适合做复杂协作、咨询、内容策略、产品运营、研究分析、审美和商业结合型工作。",
-                "真正的上升点来自可信度、结构化能力、长期服务和可复利资产。",
-            ],
-            "guidance": [
-                "现在不要只问做什么行业，要问你能沉淀什么长期资产。",
-                "把个人能力产品化：固定模块、固定流程、固定报价、固定复盘。",
-                "事业中必须争取判断权，否则会一直被合作方、客户或组织节奏牵着走。",
-            ],
+            "manifestations": _career_manifestation_points(chart),
+            "guidance": _career_guidance_points(chart),
         }
 
     if kandam == 11:
@@ -583,18 +616,14 @@ def _kandam_longform_content(chart: dict[str, Any], kandam: int) -> dict[str, An
             "paragraphs": [
                 (
                     f"第十二章看支出、海外、迁移、隐退、睡眠、灵性和解脱。第 12 宫主{PLANET_ZH[twelfth_lord]}落第 {twelfth_house} 宫，"
-                    f"罗喉第 {rahu_house} 宫、计都第 {ketu_house} 宫，Navamsa 计都在{_sign_zh(navamsa_ketu)}，说明迁移和抽离感不是偶发主题。"
+                    f"罗喉第 {rahu_house} 宫、计都第 {ketu_house} 宫，Navamsa 计都在{_sign_zh(navamsa_ketu)}。"
+                    f"{_spiritual_axis_fingerprint(_planet_house(chart, _house_lord(chart, 9)), twelfth_house, ketu_house)}"
                 ),
                 (
-                    "这一章适合重点核验外地、迁移、隐退、睡眠波动或离开熟悉圈层重新开始的周期。"
-                    "如果反馈显示这条成立，报告应继续区分：这是逃避消耗，还是新阶段确实需要新的环境结构。"
+                    f"{_spiritual_moon_ketu_fingerprint(moon_house, ketu_house)}"
                 ),
             ],
-            "manifestations": [
-                "睡眠、梦境、独处、远方、离开熟悉圈层会反复成为信号。",
-                "支出不只是钱，也包括精力、情绪和关系消耗。",
-                "灵性兴趣不能只是强体验，它需要稳定纪律和现实落地。",
-            ],
+            "manifestations": _spiritual_manifestation_points(_planet_house(chart, _house_lord(chart, 9)), twelfth_house, ketu_house),
             "guidance": [
                 "建立固定修行节奏：书写、静坐、诵念、运动、睡眠复盘任选两项，坚持 90 天。",
                 "做迁移或重启决定前，先分清是逃避消耗，还是新阶段真的需要新环境。",
@@ -637,8 +666,8 @@ def _kandam_longform_content(chart: dict[str, Any], kandam: int) -> dict[str, An
                     f"第 12 宫主{PLANET_ZH[twelfth_lord]}以及土星共同说明：你的修行不适合只追求强烈体验，而要靠固定频率和长期纪律。"
                 ),
                 (
-                    "你之前对“稳定本身就是修行”有收获，这应当作为这一章的核心。对你来说，真正有效的修法不是越神秘越好，"
-                    "而是能不能让你睡眠更稳、边界更清楚、工作更有秩序、关系更少内耗。"
+                    "这一章不能套成统一的“稳定本身就是修行”。真正有效的修法，要看第 9/12 宫和计都落点："
+                    "它应该让睡眠更稳、边界更清楚、工作更有秩序、关系更少内耗。"
                 ),
             ],
             "manifestations": [
@@ -725,29 +754,25 @@ def _section_identity(chart: dict[str, Any]) -> list[str]:
         "## 身份与人生主轴",
         "",
         (
-            f"{_sign_zh(lagna)}上升的人，本来就有“我得成为自己人生主角”的底色。"
-            f"但你的命主星{PLANET_ZH[lagna_lord]}并没有落回自我领域，而是落到了第 {lagna_lord_house} 宫，"
-            f"所以你的人生不是关起门来完成的，而是通过 {HOUSE_ARENAS[lagna_lord_house]} 被塑形。"
+            f"{_sign_zh(lagna)}上升的底色不是一句“外向/内向”能概括的，而是{LAGNA_TONES.get(lagna, HOUSE_ARENAS[1])}。"
+            f"命主星{PLANET_ZH[lagna_lord]}落第 {lagna_lord_house} 宫，说明身份感会被 {HOUSE_ARENAS[lagna_lord_house]} 反复塑形。"
         ),
         "",
         (
             f"{PLANET_ZH[lagna_lord]}落在{_sign_zh(lagna_lord_sign)}，"
             f"{_dignity_phrase(chart, lagna_lord)}"
             f"{_conjunction_phrase(chart, lagna_lord)}"
-            f"这让你既有想主导局面的心，又很难完全按个人喜好随意来，"
-            "因为现实关系、合作结构、责任边界会不断要求你成熟。"
+            f"{_lagna_lord_fingerprint(chart, lagna_lord, lagna_lord_house)}"
         ),
         "",
         (
             f"月亮在第 {moon_house} 宫，又把情绪体放进了 {HOUSE_ARENAS[moon_house]}。"
-            "这类配置通常不是表面外向、内里轻松，而是外面能扛，里面很深。"
-            "你很可能不是一直都在表达感受，而是等事情累积到一定程度后，才突然决定重组、切换或离开。"
+            f"{_moon_house_fingerprint(moon_house)}"
         ),
         "",
         (
             f"罗喉在第 {rahu_house} 宫、计都在第 {ketu_house} 宫，"
-            "说明你的成长方式也带有典型的“离开旧秩序、自己去开路”的色彩。"
-            "很多关键选择，不会完全按父辈路线或传统安全牌去走，而会被你亲自试出来。"
+            f"{_node_axis_fingerprint(rahu_house, ketu_house)}"
         ),
         "",
         "推导链：",
@@ -775,15 +800,12 @@ def _section_home(chart: dict[str, Any]) -> list[str]:
         "",
         (
             f"{PLANET_ZH[fourth_lord]}落在{_sign_zh(fourth_lord_sign)}，{_dignity_phrase(chart, fourth_lord)}"
-            f"如果这颗星同时又落在第 {fourth_lord_house} 宫这样的耗损或迁移区域，"
-            "常见表现就是：家宅主题容易伴随距离、牺牲、迁动、隐忍或情绪负担。"
+            f"{_home_lord_fingerprint(chart, fourth_lord_house)}"
         ),
         "",
         (
             f"再看月亮落第 {moon_house} 宫，木星落第 {jupiter_house} 宫。"
-            "这组合更像是：真正压在你心里的，不一定只是钱，而是情绪牵连、照料感、家庭里的隐性责任和无法彻底放下的挂念。"
-            "你并不是没有建立安全感的能力，而是你需要比别人更深地整理情绪、空间和家庭边界。"
-            "只靠扛、只靠忍，最后往往会以睡眠、情绪波动、搬家冲动或突然抽离的方式表现出来。"
+            f"{_home_moon_jupiter_fingerprint(moon_house, jupiter_house)}"
         ),
         "",
         "你更适合的家宅路径，不是追求表面完美，而是：",
@@ -811,27 +833,21 @@ def _section_relationship(chart: dict[str, Any]) -> list[str]:
         "## 关系、伴侣与合作模式",
         "",
         (
-            f"你的关系线不是轻松型，也不是只靠感觉推进的类型。"
+            f"你的关系线不能套成一句“需要深度”。"
             f"第 7 宫主{PLANET_ZH[seventh_lord]}落在第 {seventh_lord_house} 宫，"
-            "说明伴侣关系、合作关系、客户关系都会直接进入你的人生主线。"
+            f"说明关系会通过 {HOUSE_ARENAS[seventh_lord_house]} 触发。"
         ),
         "",
         (
             f"{PLANET_ZH[seventh_lord]}落在{_sign_zh(seventh_lord_sign)}，{_dignity_phrase(chart, seventh_lord)}"
             f"金星落在第 {venus_house} 宫的{_sign_zh(venus_sign)}，Navamsa 金星又落在{_sign_zh(navamsa_venus)}。"
-            "这常见的现实版本是：你不是只要心动，你要的是能一起扛现实、一起成长、最好还能在精神上互相理解的人。"
+            f"{_relationship_fingerprint(chart, seventh_lord_house, venus_house)}"
         ),
         "",
-        (
-            "所以你的关系课题通常不是“有没有桃花”这么简单，而是："
-            "你会不会因为责任、工作节奏、现实压力、价值感问题，把关系推进得太沉；"
-            "或者反过来，因为害怕失控，而迟迟不肯真正交付。"
-        ),
+        _relationship_risk_fingerprint(chart, seventh_lord_house, venus_house),
         "",
-        "对你更好的关系，不是没有压力，而是压力可以被共同处理：",
-        "- 对方本身要有责任感和边界感。",
-        "- 关系里必须允许现实问题被讨论，而不是全部用情绪吞下去。",
-        "- 你需要的是长期可共建，而不是短期热烈后迅速耗尽。",
+        "对你更好的关系处理方式：",
+        *[f"- {point}" for point in _relationship_guidance_points(seventh_lord_house, venus_house)],
         "",
         "推导链：",
         f"- 第 7 宫主：{PLANET_ZH[seventh_lord]}落第 {seventh_lord_house} 宫。",
@@ -853,29 +869,21 @@ def _section_career(chart: dict[str, Any]) -> list[str]:
         "## 事业与社会角色",
         "",
         (
-            f"你的事业不是那种“天赋一露面就一路直冲”的盘。"
+            f"你的事业不能写成泛泛的“长期积累”。"
             f"第 10 宫主{PLANET_ZH[tenth_lord]}落第 {tenth_lord_house} 宫，"
-            f"说明职业路线要通过 {HOUSE_ARENAS[tenth_lord_house]} 打磨出来。"
+            f"说明职业路线要通过 {HOUSE_ARENAS[tenth_lord_house]} 打磨出来。{_career_house_fingerprint(chart)}"
         ),
         "",
         (
             f"{PLANET_ZH[tenth_lord]}落在{_sign_zh(tenth_lord_sign)}，{_dignity_phrase(chart, tenth_lord)}"
             f"再看土星落第 {saturn_house} 宫，水星和金星都参与了第 {mercury_house}/{venus_house} 宫这条线。"
-            "这类配置很适合做需要长期沉淀、持续服务、复杂协作、结构搭建、审美和认知都要一起工作的事情。"
+            f"{_career_planet_mix_fingerprint(chart, tenth_lord_house, saturn_house, mercury_house, venus_house)}"
         ),
         "",
-        (
-            "更直接地说，你的事业好结果，不来自一把梭的冲刺，而来自以下几类能力的复利："
-        ),
-        "- 把复杂问题拆开、整理、流程化。",
-        "- 把关系、内容、审美或策略转成稳定可交付的价值。",
-        "- 在合作和客户场景里建立自己的角色权威，而不是只做幕后执行。",
+        "更直接地说，事业要优先看这几类能力：",
+        *[f"- {point}" for point in _career_guidance_points(chart)],
         "",
-        (
-            "如果职业早年有反复试错、在组织与独立之间摆荡、明明能力不差却经常被现实琐事拖住，"
-            "这反而和你的盘是相符的。因为这张盘的成长路径本来就不是先轻松、后成熟，"
-            "而是先在责任里练出专业度，后面才逐渐把判断权拿回来。"
-        ),
+        _career_risk_fingerprint(chart),
         "",
         "推导链：",
         f"- 第 10 宫主：{PLANET_ZH[tenth_lord]}落第 {tenth_lord_house} 宫。",
@@ -901,14 +909,12 @@ def _section_spirituality(chart: dict[str, Any]) -> list[str]:
             f"这张盘的灵性线不是抽象兴趣，而是和现实人生真正拴在一起。"
             f"第 9 宫主{PLANET_ZH[ninth_lord]}落第 {ninth_lord_house} 宫，"
             f"第 12 宫主{PLANET_ZH[twelfth_lord]}落第 {twelfth_lord_house} 宫，"
-            "再加上计都参与，这往往意味着信念、迁移、修行、抽离感这些主题会反复出现。"
+            f"再加上计都第 {ketu_house} 宫，{_spiritual_axis_fingerprint(ninth_lord_house, twelfth_lord_house, ketu_house)}"
         ),
         "",
         (
             f"尤其当月亮落在第 {moon_house} 宫、计都落在第 {ketu_house} 宫时，"
-            "你会对“表层生活不够解释一切”这件事特别敏感。"
-            "你可能比周围人更早接触深层心理、玄学、修行、梦境、宿命感、突然的离开冲动，"
-            "或者总觉得自己终究要走一条和常规路线不太一样的路。"
+            f"{_spiritual_moon_ketu_fingerprint(moon_house, ketu_house)}"
         ),
         "",
         (
@@ -918,9 +924,7 @@ def _section_spirituality(chart: dict[str, Any]) -> list[str]:
         ),
         "",
         "这条线更可能以这些现实形式出现：",
-        "- 迁移、换城市、离开熟悉圈层后反而打开自己。",
-        "- 睡眠、梦境、情绪潮汐明显，需要独处和恢复空间。",
-        "- 对父辈信念、传统路径或权威体系既尊重又不完全服从。",
+        *[f"- {point}" for point in _spiritual_manifestation_points(ninth_lord_house, twelfth_lord_house, ketu_house)],
         "",
         "推导链：",
         f"- 第 9 宫主：{PLANET_ZH[ninth_lord]}落第 {ninth_lord_house} 宫。",
@@ -941,23 +945,17 @@ def _section_career_wealth_synthesis(chart: dict[str, Any], theme_ids: set[str])
         "## 事业财富合参",
         "",
         (
-            f"你的财富逻辑和事业逻辑是绑在一起的。"
+            f"你的财富逻辑和事业逻辑是绑在一起的，但具体绑法要看第 2/10/11 宫，不再套同一套话。"
             f"第 2 宫主{PLANET_ZH[second_lord]}落第 {second_lord_house} 宫，"
             f"第 11 宫主{PLANET_ZH[eleventh_lord]}落第 {eleventh_lord_house} 宫，"
             f"木星又落第 {jupiter_house} 宫。"
-            "这不是一张单靠短线刺激、投机波动就能长期舒服赚钱的盘。"
+            f"{_wealth_fingerprint(second_lord_house, eleventh_lord_house, jupiter_house)}"
         ),
         "",
-        (
-            "它更像这样一种模式：先用认知、沟通、系统、长期合作把价值做厚，"
-            "然后收益才逐步累积起来。你适合的是能被复用、能被信任、能被持续购买的价值，"
-            "而不是只靠一次交易或一次运气。"
-        ),
+        _wealth_model_paragraph(second_lord_house, eleventh_lord_house, jupiter_house),
         "",
         "如果你要判断“创业还是上班”，更准确的问法不是二选一，而是：",
-        "- 你能不能把自己的能力沉淀成可反复出售的结构。",
-        "- 你能不能在合作/客户场景中保留判断权。",
-        "- 你能不能承受早期并不轻松、但长期能复利的路径。",
+        *[f"- {point}" for point in _wealth_decision_points(second_lord_house, eleventh_lord_house, jupiter_house)],
         "",
     ]
     if "career" in theme_ids:
@@ -984,19 +982,23 @@ def _section_career_wealth_synthesis(chart: dict[str, Any], theme_ids: set[str])
 
 
 def _section_spiritual_tone(chart: dict[str, Any]) -> list[str]:
+    ninth_lord = _house_lord(chart, 9)
+    twelfth_lord = _house_lord(chart, 12)
+    ninth_lord_house = _planet_house(chart, ninth_lord)
+    twelfth_lord_house = _planet_house(chart, twelfth_lord)
+    ketu_house = _planet_house(chart, "Ketu")
     body = [
         "## 灵性线的正确打开方式",
         "",
         (
-            "你的盘确实有灵性、玄学、深层心理、迁移和抽离感这些线索。"
-            "但这并不意味着最适合你的路是彻底脱离现实。"
-            "相反，你真正的功课，是在现实责任、关系秩序和内在修行之间建立稳定桥梁。"
+            f"这张盘的灵性线要按第 9 宫主{PLANET_ZH[ninth_lord]}第 {ninth_lord_house} 宫、"
+            f"第 12 宫主{PLANET_ZH[twelfth_lord]}第 {twelfth_lord_house} 宫、计都第 {ketu_house} 宫来读。"
+            f"{_spiritual_axis_fingerprint(ninth_lord_house, twelfth_lord_house, ketu_house)}"
         ),
         "",
         (
-            "所以比起追求瞬间开悟、强烈体验或频繁换体系，"
-            "你更适合固定频率的长期方法：书写、静坐、诵念、身体训练、规律睡眠、周期复盘。"
-            "对你来说，稳定本身就是修行。"
+            f"所以这条线不是统一写成“静坐、书写、诵念”就结束。"
+            f"{_spiritual_method_fingerprint(ninth_lord_house, twelfth_lord_house, ketu_house)}"
         ),
         "",
     ]
@@ -1131,6 +1133,320 @@ def _section_appendix(
     lines.append("  - 若未来接入真实叶片语料、姓名音节索引和人工校对，才有资格研究这一层。")
     lines.append("")
     return lines
+
+
+def _dominant_house_cluster(chart: dict[str, Any]) -> tuple[int, list[str]]:
+    counts: dict[int, list[str]] = {}
+    for planet in chart["planets"]:
+        house = int(planet["house_from_lagna"])
+        counts.setdefault(house, []).append(str(planet["name"]))
+    return max(counts.items(), key=lambda item: (len(item[1]), item[0]))
+
+
+def _planets_in_house(chart: dict[str, Any], house: int) -> list[str]:
+    return [str(planet["name"]) for planet in chart["planets"] if int(planet["house_from_lagna"]) == house]
+
+
+def _planet_list_zh(planets: list[str]) -> str:
+    return "、".join(PLANET_ZH[planet] for planet in planets)
+
+
+def _moon_house_fingerprint(house: int) -> str:
+    if house == 1:
+        return "情绪、身体反应和个人存在感直接连在一起；一有压力，先从脸色、睡眠、冲动、表达速度和身体紧张度露出来。"
+    if house == 4:
+        return "安全感主要从家宅、母缘、私人空间和睡眠稳定度来判断；住得稳不稳，内在差别很大。"
+    if house == 8:
+        return "情绪会深入危机、信任、共享资源和心理暗流；真正触发选择的往往不是表面事件，而是深层不安全感。"
+    if house == 10:
+        return "外部评价、事业身份和公众角色会直接影响情绪稳定；越被看见，越需要恢复节律。"
+    if house == 12:
+        return "情绪需要独处、睡眠、梦境和退隐空间消化；长期被打扰会明显耗损。"
+    return f"安全感会通过{HOUSE_ARENAS[house]}表达，核验时要看这一领域是否最容易牵动情绪。"
+
+
+def _node_axis_fingerprint(rahu_house: int, ketu_house: int) -> str:
+    if rahu_house == 10 and ketu_house == 4:
+        return "不是单纯想成功，而是被推向公开身份、事业舞台和社会可见度；同时旧的家宅安全感、依赖感或内在根基会被迫松绑。"
+    if rahu_house == 3 and ketu_house == 9:
+        return "不是只追随某个信念体系，而是要把远大信念压成可输出、可训练、可传播的技能；越行动，越能校正方向。"
+    if rahu_house == 7 and ketu_house == 1:
+        return "关系、合作和公众回应会被放大，但个人边界容易被稀释，必须学会在绑定中保留自己。"
+    if rahu_house == 1 and ketu_house == 7:
+        return "个人主导权会被放大，但关系中的旧依赖和旧契约需要清理，不能只靠自我意志硬推。"
+    return f"罗喉推动{HOUSE_ARENAS[rahu_house]}扩张，计都让{HOUSE_ARENAS[ketu_house]}带着抽离、清理和旧业感。"
+
+
+def _lagna_lord_fingerprint(chart: dict[str, Any], lagna_lord: str, house: int) -> str:
+    companions = _companions(chart, lagna_lord)
+    if house == 10 and "Rahu" in companions:
+        return "这不是低调幕后型身份，命主星被推到事业宫并贴近罗喉，说明人生很难完全躲在私域里，迟早要面对公开角色、野心、曝光和职业定位。"
+    if house == 6:
+        return "命主星落第 6 宫，身份感会被工作、服务、竞争、问题处理和现实压力打磨，容易先累后成。"
+    if house == 7:
+        return "命主星落第 7 宫，别人、客户、伴侣和合作关系会像镜子一样反复逼你认识自己。"
+    if house == 12:
+        return "命主星落第 12 宫，人生会带有迁移、退隐、损耗、梦境或灵性线索，不能只按世俗直线成功来读。"
+    return f"命主星落第 {house} 宫，身份会经由{HOUSE_ARENAS[house]}成形，这一宫比普通性格描述更关键。"
+
+
+def _home_lord_fingerprint(chart: dict[str, Any], fourth_lord_house: int) -> str:
+    ketu_house = _planet_house(chart, "Ketu")
+    if ketu_house == 4:
+        return "计都又落第 4 宫，家宅不是单纯温暖背景，而可能带来抽离感、搬迁感、根基感不足或“心里很难真正落地”的体验。"
+    if fourth_lord_house == 7:
+        return "第 4 宫主落第 7 宫，家宅会被伴侣、合作、客户或外部关系牵动，居住和内在稳定常常不是一个人就能决定。"
+    if fourth_lord_house == 10:
+        return "第 4 宫主落第 10 宫，家宅和事业互相牵动，工作选择会反过来改变居住和家庭结构。"
+    if fourth_lord_house in DUSTHANA_HOUSES:
+        return f"第 4 宫主落第 {fourth_lord_house} 宫，家宅主题容易带有损耗、迁动、隐忍或需要修复的色彩。"
+    return f"第 4 宫主落第 {fourth_lord_house} 宫，家宅议题会通过{HOUSE_ARENAS[fourth_lord_house]}表现。"
+
+
+def _home_moon_jupiter_fingerprint(moon_house: int, jupiter_house: int) -> str:
+    if moon_house == 1 and jupiter_house == 7:
+        return "这不是把家庭压力全部压在心里的结构，而是家庭感、伴侣/合作关系和自我状态互相牵动：关系稳定时人会更稳，关系失序时身体和情绪反应会很快。"
+    if moon_house == 8:
+        return "这组合更像是情绪牵连、共享资源、照料责任和深层不安全感互相缠绕，需要通过透明边界和心理复盘来化解。"
+    return f"月亮第 {moon_house} 宫、木星第 {jupiter_house} 宫，说明安全感和修复力分别从{HOUSE_ARENAS[moon_house]}、{HOUSE_ARENAS[jupiter_house]}进入。"
+
+
+def _relationship_fingerprint(chart: dict[str, Any], seventh_lord_house: int, venus_house: int) -> str:
+    if _planet_house(chart, "Saturn") == 7 and _planet_house(chart, "Jupiter") == 7:
+        return "第 7 宫同时有木星和土星，关系既有放大机会，也有现实压力；容易遇到能带来成长的人，也会被契约、边界、责任和时间考验。"
+    if seventh_lord_house == 1:
+        return "第 7 宫主回到第 1 宫，关系不是外部附属品，而会直接改变自我状态、行动方式和身体反应。"
+    if venus_house == 10:
+        return "金星落第 10 宫，关系、审美、价值感和事业身份连在一起，伴侣/合作对象常会影响他的职业状态。"
+    return f"关系主题会通过第 {seventh_lord_house} 宫和第 {venus_house} 宫共同表达。"
+
+
+def _relationship_risk_fingerprint(chart: dict[str, Any], seventh_lord_house: int, venus_house: int) -> str:
+    if _planet_house(chart, "Saturn") == 7:
+        return "所以他的关系课题不是简单“有没有桃花”，而是：一旦绑定，就会出现责任、时间、承诺、现实落差和边界谈判。关系太轻会觉得无效，关系太重又会压住自我。"
+    if seventh_lord_house == 12:
+        return "所以他的关系课题常和距离、隐退、异地、消耗或不可见成本有关；不能只看心动，要看长期能否减少损耗。"
+    if venus_house == 6:
+        return "所以关系容易和服务、工作、压力、修正、挑剔或现实任务绑在一起，需要防止爱变成劳动。"
+    return "所以关系课题要回到具体互动模式：谁主导、谁让步、谁承担、谁逃避，而不是只问感觉够不够强。"
+
+
+def _relationship_guidance_points(seventh_lord_house: int, venus_house: int) -> list[str]:
+    if seventh_lord_house == 1:
+        return [
+            "关系一开始就要观察自己身体和行动状态是否变稳，而不是只看对方条件。",
+            "不要为了维持关系放弃个人节奏，也不要一有压力就用切断来拿回控制感。",
+            "合作和亲密关系都要设置复盘机制，否则压力会直接进入自我状态。",
+        ]
+    if venus_house == 10:
+        return [
+            "把伴侣、客户、合作和事业角色分清楚，别让一种关系吞掉所有角色。",
+            "看对方是否尊重你的公开身份、职业节奏和长期目标。",
+            "重要合作要先谈权责、时间、交付和退出机制。",
+        ]
+    return [
+        "筛选关系时看现实沟通、边界处理和长期共建能力。",
+        "不要把沉重感误判为深度，也不要把轻松感一概判成不可靠。",
+        "重要关系要建立复盘机制，而不是让情绪长期积压。",
+    ]
+
+
+def _relationship_manifestation_points(chart: dict[str, Any], seventh_lord_house: int, venus_house: int) -> list[str]:
+    if _planet_house(chart, "Saturn") == 7 and _planet_house(chart, "Jupiter") == 7:
+        return [
+            "容易遇到能带来资源、视野或成长的人，但关系同时带有责任、时间和现实考验。",
+            "合作或亲密关系一旦开始，就会牵动自我状态、职业节奏和公开角色。",
+            "关系不是轻飘飘的陪伴，而像一面镜子，会放大边界、承诺和控制权问题。",
+        ]
+    if seventh_lord_house == 1:
+        return [
+            "伴侣、客户或合作方的变化会很快影响自我状态和行动节奏。",
+            "关系里容易既想靠近，又想保留主导权。",
+            "冲突不一定外显很久，但容易突然切断或突然重启。",
+        ]
+    if venus_house == 10:
+        return [
+            "关系、审美、价值感和事业身份绑得比较紧。",
+            "合作对象或伴侣质量会影响职业判断和外部评价。",
+            "容易在公开角色、工作节奏和关系需求之间拉扯。",
+        ]
+    return [
+        "关系会牵动工作节奏、价值感、责任感和人生秩序。",
+        "合作对象、客户、伴侣的质量，会直接影响事业和内在稳定。",
+        "越是重要的关系，越需要现实沟通和边界复盘。",
+    ]
+
+
+def _career_house_fingerprint(chart: dict[str, Any]) -> str:
+    tenth_house_planets = _planets_in_house(chart, 10)
+    if "Rahu" in tenth_house_planets and {"Mercury", "Venus"} <= set(tenth_house_planets):
+        return "第 10 宫又聚集水星、金星、罗喉，职业不是普通稳定岗逻辑，而是强烈的公开身份、传播、审美/商业结合、非传统放大和被看见的压力。"
+    if "Rahu" in tenth_house_planets:
+        return "罗喉在第 10 宫会放大事业野心和曝光需求，适合非传统路径，但也容易被外界评价牵引。"
+    if _planet_house(chart, "Moon") == 10:
+        return "月亮参与第 10 宫时，公众反馈和职业变化会直接影响情绪与安全感。"
+    return ""
+
+
+def _career_planet_mix_fingerprint(
+    chart: dict[str, Any],
+    tenth_lord_house: int,
+    saturn_house: int,
+    mercury_house: int,
+    venus_house: int,
+) -> str:
+    if mercury_house == 10 and venus_house == 10:
+        return "水星和金星同时在事业宫，说明职业要把沟通、审美、产品感、关系经营和商业表达结合起来；只做纯执行会浪费配置。"
+    if saturn_house == 7 and tenth_lord_house == 1:
+        return "第 10 宫主落第 1 宫，而土星在第 7 宫，说明职业要靠个人存在感打开，但会被合作、客户和长期契约严格检验。"
+    if mercury_house == 6 and venus_house == 6:
+        return "水星和金星在第 6 宫，职业更像在问题处理、服务、流程和修正里积累专业，而不是先靠曝光。"
+    return f"事业会同时牵动第 {tenth_lord_house}、{saturn_house}、{mercury_house}、{venus_house} 宫，不能只按一个职业标签判断。"
+
+
+def _career_manifestation_points(chart: dict[str, Any]) -> list[str]:
+    tenth_house_planets = set(_planets_in_house(chart, 10))
+    if {"Mercury", "Venus", "Rahu"} <= tenth_house_planets:
+        return [
+            "职业容易走向公开表达、内容/产品包装、商业审美、传播或非传统增长。",
+            "别人会先看到他的角色感、表达能力、审美判断或对外承担，而不是只看到私下状态。",
+            "事业机会来得快时，焦虑和外界期待也会同步放大。",
+        ]
+    if _planet_house(chart, "Rahu") == 3:
+        return [
+            "事业起势更依赖自学、表达、短途试错、连接和方法论输出。",
+            "越主动输出，越容易打开机会；越等别人授权，越容易卡住。",
+            "早年可能先经历多轮试错，后面才把经验整理成资产。",
+        ]
+    return [
+        "职业前期容易在责任、合作、专业化和角色权威之间反复打磨。",
+        "真正起势来自可信度、结构化能力、长期服务和可复利资产。",
+        "事业不能只看行业名，要看他能否形成稳定角色和交付系统。",
+    ]
+
+
+def _career_guidance_points(chart: dict[str, Any]) -> list[str]:
+    tenth_house_planets = set(_planets_in_house(chart, 10))
+    if {"Mercury", "Venus", "Rahu"} <= tenth_house_planets:
+        return [
+            "做能被看见的作品、内容、产品或角色，不要只在幕后承担。",
+            "把沟通能力、审美判断、商业包装和方法论做成统一输出。",
+            "罗喉在 10 宫会放大野心，也会放大焦虑；公开身份要有边界和节奏。",
+        ]
+    if _planet_house(chart, "Rahu") == 3:
+        return [
+            "靠输出开路：写、说、做内容、做方法论、做连接。",
+            "把短期试错整理成作品库和案例库。",
+            "不要一直等权威认可，先用行动校正方向。",
+        ]
+    return [
+        "把复杂问题拆开、整理、流程化。",
+        "把关系、内容、审美或策略转成稳定可交付的价值。",
+        "在合作和客户场景里建立自己的角色权威，而不是只做幕后执行。",
+    ]
+
+
+def _career_risk_fingerprint(chart: dict[str, Any]) -> str:
+    if _planet_house(chart, "Rahu") == 10:
+        return "事业风险在于太容易被外部舞台、名声、增长和他人期待拉走；如果没有自己的标准，会越忙越不像自己。"
+    if _planet_house(chart, "Saturn") == 6:
+        return "事业风险在于长期服务和问题处理变成慢性消耗；必须让流程、报价和边界先成熟。"
+    return "事业风险不在于有没有能力，而在于能否把能力稳定成角色、流程、作品和议价权。"
+
+
+def _spiritual_axis_fingerprint(ninth_lord_house: int, twelfth_lord_house: int, ketu_house: int) -> str:
+    if ninth_lord_house == 10 and twelfth_lord_house == 10:
+        return "信念和灵性不会只发生在隐退处，反而会被事业、公众身份和现实责任不断召回；修行要落到社会角色里。"
+    if ninth_lord_house == 6 or twelfth_lord_house == 6:
+        return "信念和灵性会经由服务、工作、压力、身体管理和日常纪律来修，不适合只追强体验。"
+    if ketu_house == 9:
+        return "计都牵动第 9 宫时，会对传统信念、导师和宗教体系既敏感又疏离，需要自己验证而不是盲从。"
+    return "信念、迁移、修行、抽离感这些主题会反复出现，但必须根据落宫分清现实入口。"
+
+
+def _spiritual_moon_ketu_fingerprint(moon_house: int, ketu_house: int) -> str:
+    if moon_house == 1 and ketu_house == 4:
+        return "灵性或抽离感首先表现为身体想离开某个场、家宅根基感不足、需要私人空间，而不是单纯想研究玄学。"
+    if moon_house == 8 and ketu_house == 9:
+        return "深层心理、宿命感、父辈/信念系统和生死转化会绑在一起，适合长期内修，不适合频繁换体系。"
+    return f"月亮第 {moon_house} 宫和计都第 {ketu_house} 宫会共同决定此人的抽离方式和内在修复入口。"
+
+
+def _spiritual_manifestation_points(ninth_lord_house: int, twelfth_lord_house: int, ketu_house: int) -> list[str]:
+    if ninth_lord_house == 10 and twelfth_lord_house == 10:
+        return [
+            "信念、学习、导师和远方经验会反过来改变职业路线。",
+            "越是在公众角色中承担责任，越需要稳定的内在方法防止空心化。",
+            "不适合只退隐修行，更适合把修行变成工作伦理、表达纪律和关系边界。",
+        ]
+    if ketu_house == 4:
+        return [
+            "家宅、居住和内在安全感会周期性触发抽离。",
+            "需要稳定私人空间，否则容易用工作或远方感逃避内在不安。",
+            "修行首先是落地：睡眠、空间、身体和情绪边界。",
+        ]
+    return [
+        "迁移、换城市、离开熟悉圈层后反而打开自己。",
+        "睡眠、梦境、情绪潮汐明显，需要独处和恢复空间。",
+        "对父辈信念、传统路径或权威体系既尊重又不完全服从。",
+    ]
+
+
+def _wealth_fingerprint(second_lord_house: int, eleventh_lord_house: int, jupiter_house: int) -> str:
+    if second_lord_house == 1 and eleventh_lord_house == 9:
+        return "财富和自我行动、远行/信念/导师线绑定，赚钱不是只靠岗位，而靠个人判断、学习系统和能否主动开路。"
+    if second_lord_house == 12 and eleventh_lord_house == 7:
+        return "财富容易同时牵动消耗、迁移、合作和客户关系，现金流要特别防止隐性损耗。"
+    if second_lord_house == 6:
+        return "财富会从服务、问题处理、日常工作和专业修正里慢慢积累，不适合只靠一次爆发。"
+    return f"财富入口主要通过{HOUSE_ARENAS[second_lord_house]}，收益兑现主要通过{HOUSE_ARENAS[eleventh_lord_house]}。"
+
+
+def _wealth_model_paragraph(second_lord_house: int, eleventh_lord_house: int, jupiter_house: int) -> str:
+    if second_lord_house == 1 and eleventh_lord_house == 9:
+        return (
+            "它更像“个人能力 + 学习视野 + 对外表达”的赚钱模式：先形成个人判断和行动风格，"
+            "再通过课程、远行、导师、行业认知或跨圈层资源放大收益。"
+        )
+    if jupiter_house == 7:
+        return (
+            "木星第 7 宫说明贵人、客户、伴侣或合作对象会放大资源；但同宫如果有土星参与，"
+            "就不是轻松靠人，而是要在长期契约和责任中换来稳定收益。"
+        )
+    return (
+        "它更像这样一种模式：先把能力做厚，再让收入通过作品、合作、系统或口碑慢慢复利，"
+        "而不是只靠一次交易或一次运气。"
+    )
+
+
+def _wealth_decision_points(second_lord_house: int, eleventh_lord_house: int, jupiter_house: int) -> list[str]:
+    if second_lord_house == 1 and eleventh_lord_house == 9:
+        return [
+            "他能不能把个人判断变成可被别人理解和购买的表达？",
+            "他有没有持续学习、远行、跨圈层或导师资源来打开收益上限？",
+            "他能不能避免冲动行动，把个人风格沉淀成稳定信用？",
+        ]
+    if jupiter_house == 7:
+        return [
+            "合作对象是否能带来真实资源，而不是只带来消耗？",
+            "契约、分工、利润分配和退出机制是否清楚？",
+            "他能不能在合作里保留判断权，而不是被关系牵着走？",
+        ]
+    return [
+        "这项收入能不能复用？",
+        "这个合作能不能沉淀口碑或转介绍？",
+        "这条路径是不是只靠短期运气，而没有长期资产？",
+    ]
+
+
+def _spiritual_method_fingerprint(ninth_lord_house: int, twelfth_lord_house: int, ketu_house: int) -> str:
+    if ninth_lord_house == 10 and twelfth_lord_house == 10:
+        return "更适合把修行变成职业伦理、稳定表达、边界感、对外承诺和长期作品，而不是完全退到山里或只追求强体验。"
+    if ketu_house == 4:
+        return "最基础的修行不是神秘仪式，而是把居住、睡眠、身体和内在安全感稳定下来。"
+    if ketu_house == 9:
+        return "适合长期跟一个体系深挖，同时保留验证精神；不要因为一时怀疑就频繁换体系。"
+    return "更适合固定频率的长期方法：书写、静坐、诵念、身体训练、规律睡眠、周期复盘。"
 
 
 def _planet(chart: dict[str, Any], name: str) -> dict[str, Any]:
