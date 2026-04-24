@@ -91,7 +91,7 @@ Every important claim should be marked with one of these labels:
 ## Quick Start
 
 ```bash
-git clone https://github.com/<owner>/jyotish-nadi-template.git
+git clone https://github.com/joyozhang333-lgtm/jyotish-nadi-template.git
 cd jyotish-nadi-template
 
 python3 -m venv .venv
